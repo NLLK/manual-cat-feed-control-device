@@ -447,8 +447,8 @@ void interact_TIMESET(Key key) {
       Cursors.timeset++;
       if (Cursors.timesetSaveState){
         rtc.setTime(setTimeTemp);
-        //UC_SetMealsForToday();
-        //UC_SetNextMeal(); //TODO: return it back
+        UC_SetMealsForToday();
+        UC_SetNextMeal();
       }
       break;
     }
