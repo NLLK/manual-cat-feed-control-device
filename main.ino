@@ -66,7 +66,7 @@ const uint8_t lastNextMealChangeTimer_TO = 5;      //s
 const uint8_t backlightTurnOffTimer_TO = 120;      //s
 const uint16_t debouncingTimer_TO = 300;           //ms
 const uint8_t hungryCatAlarm_TO = 2;               //s
-const uint16_t screenAnimationFrameDuration = 20;  //ms
+const uint16_t screenAnimationFrameDuration = 50;  //ms
 
 ScreenType currentScreen = ScreenType::MAIN;
 Datime setTimeTemp;
@@ -118,6 +118,7 @@ bool hungryCatAlarmStatus = false;
 bool keyHandleStatus = false;
 
 bool tenMsExpired = false;
+uint16_t currentYearDay = 0;
 //
 // setup
 //
@@ -204,6 +205,12 @@ void loop() {
 }
 
 void secondsInt(void) {
+
+  if (currentYearDay != rtc.yearDay()){
+    currentYearDay = rtc.yearDay();
+    UC_SetMealsForToday();
+  }
+
   if (backlightStatus) {
     Timers.backlightTurnOff++;
 
@@ -440,8 +447,8 @@ void interact_TIMESET(Key key) {
       Cursors.timeset++;
       if (Cursors.timesetSaveState){
         rtc.setTime(setTimeTemp);
-        UC_SetMealsForToday();
-        UC_SetNextMeal(); //TODO: return it back
+        //UC_SetMealsForToday();
+        //UC_SetNextMeal(); //TODO: return it back
       }
       break;
     }
