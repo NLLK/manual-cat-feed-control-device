@@ -112,6 +112,7 @@ extern bool keyHandleStatus;
 
 extern bool tenMsExpired;
 extern uint16_t currentYearDay;
+extern bool externalButtonClicked;
 
 extern GyverDS3231 rtc;
 extern LiquidCrystal lcd;

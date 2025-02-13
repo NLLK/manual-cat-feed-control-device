@@ -5,8 +5,10 @@
 #include "interaction.h"
 #include "common.h"
 
-#define LEDlcdPin 10
+#include <LowPower.h>
 
+#define LEDlcdPin 10
+#define EXTERNAL_BUTTON_PIN 1
 void setup() {
 
   timer_init_ISR_100Hz(TIMER_DEFAULT);
@@ -26,7 +28,12 @@ void setup() {
   //load settings from eeprom
   loadSettings();
   digitalWrite(LEDlcdPin, HIGH);
+
+  attachInterrupt(digitalPinToInterrupt(EXTERNAL_BUTTON_PIN), handleExternalButtonInterrupt, FALLING);
+  pinMode(EXTERNAL_BUTTON_PIN, INPUT);
 }
+
+
 
 //
 // logic
@@ -45,7 +52,7 @@ void loop() {
   }
 
   screenAnimationHandle();
-  backlightHandle();
+  powerHandle();
   keysHandle();
 }
 
@@ -117,18 +124,25 @@ void timer_handle_interrupts(int timer) {
   }
 }
 
-void backlightHandle() {
-
-  bool wantedStatus = backlightStatus || Timers.hungryCatAlarmChange_FF_status;
+void powerHandle() {
 
   static bool lastBacklightStatus = true;
-  if (lastBacklightStatus != wantedStatus) {
-    lastBacklightStatus = wantedStatus;
-    digitalWrite(LEDlcdPin, wantedStatus ? HIGH : LOW);
+  if (lastBacklightStatus != backlightStatus) {
+    lastBacklightStatus = backlightStatus;
+    digitalWrite(LEDlcdPin, backlightStatus ? HIGH : LOW);
+    
+    if (backlightStatus)
+    LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF); 
   }
 }
 
 void keysHandle() {
+
+  if (externalButtonClicked){
+    externalButtonClicked = false;
+    interact(Key::ENTER);
+  }
+
   if (!keyHandleStatus) return;
 
   keyHandleStatus = false;
@@ -156,4 +170,8 @@ Key keys(int xKeyVal) {
   else if (xKeyVal < 600) return Key::LEFT;
   else if (xKeyVal < 800) return Key::ENTER;
   else return Key::NONE;
+}
+
+void handleExternalButtonInterrupt(){
+  externalButtonClicked = true;
 }

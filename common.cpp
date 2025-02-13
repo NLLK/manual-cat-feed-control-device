@@ -27,6 +27,7 @@ bool keyHandleStatus = false;
 
 bool tenMsExpired = false;
 uint16_t currentYearDay = 0;
+bool externalButtonClicked = false;
 
 GyverDS3231 rtc;
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
