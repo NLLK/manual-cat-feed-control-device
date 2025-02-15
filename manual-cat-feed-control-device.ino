@@ -5,7 +5,7 @@
 #include "interaction.h"
 #include "common.h"
 
-#include <LowPower.h>
+#include <LowPower.h> //https://github.com/rocketscream/Low-Power
 
 #define LEDlcdPin 10
 #define EXTERNAL_BUTTON_PIN 1
@@ -29,8 +29,8 @@ void setup() {
   loadSettings();
   digitalWrite(LEDlcdPin, HIGH);
 
-  attachInterrupt(digitalPinToInterrupt(EXTERNAL_BUTTON_PIN), handleExternalButtonInterrupt, FALLING);
-  pinMode(EXTERNAL_BUTTON_PIN, INPUT);
+  attachInterrupt(digitalPinToInterrupt(EXTERNAL_BUTTON_PIN), handleExternalButtonInterrupt, RISING);
+  pinMode(EXTERNAL_BUTTON_PIN, INPUT_PULLUP);
 }
 
 
@@ -122,6 +122,10 @@ void timer_handle_interrupts(int timer) {
   if (Timers.debouncingStatus) {
     Timers.debouncing += 10;
   }
+
+  if (Timers.extDebouncingStatus) {
+    Timers.extDebouncing += 10;
+  }
 }
 
 void powerHandle() {
@@ -129,10 +133,13 @@ void powerHandle() {
   static bool lastBacklightStatus = true;
   if (lastBacklightStatus != backlightStatus) {
     lastBacklightStatus = backlightStatus;
+    lcd.display();
     digitalWrite(LEDlcdPin, backlightStatus ? HIGH : LOW);
     
-    if (backlightStatus)
-    LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF); 
+    if (!backlightStatus){
+      lcd.noDisplay();
+      LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF); 
+    }
   }
 }
 
@@ -140,12 +147,25 @@ void keysHandle() {
 
   if (externalButtonClicked){
     externalButtonClicked = false;
-    interact(Key::ENTER);
-  }
 
+    if (!Timers.extDebouncingStatus) {
+      Timers.extDebouncingStatus = true;
+    } else {
+      if (Timers.extDebouncing >= extButtonDebouncingTimer_TO) {
+        Timers.extDebouncingStatus = false;
+        Timers.extDebouncing = 0;
+
+        interact(Key::ENTER);
+        updateScreen();
+      }
+    }  
+  }
+  
   if (!keyHandleStatus) return;
 
   keyHandleStatus = false;
+
+
   Key key = keys(analogRead(0));
 
   if (key == Key::NONE) return;

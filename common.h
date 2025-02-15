@@ -53,6 +53,7 @@ CursorTimeset& operator++(CursorTimeset& val, int);
 extern const uint8_t lastNextMealChangeTimer_TO;      //s
 extern const uint8_t backlightTurnOffTimer_TO;        //s
 extern const uint16_t debouncingTimer_TO;             //ms
+extern const uint16_t extButtonDebouncingTimer_TO;    //ms
 extern const uint8_t hungryCatAlarm_TO;               //s
 extern const uint16_t screenAnimationFrameDuration;   //ms
 
@@ -80,6 +81,9 @@ struct TimersDef {
 
   uint16_t debouncing;
   bool debouncingStatus;
+  
+  uint16_t extDebouncing;
+  bool extDebouncingStatus;
 
   uint8_t backlightTurnOff;
 
