@@ -15,9 +15,9 @@ void interact(Key key) {
   }
 
   switch (currentScreen) {
-    case ScreenType::MAIN: interact_MAIN(key); break;
-    case ScreenType::SETTINGS: interact_SETTINGS(key); break;
-    case ScreenType::TIMESET: interact_TIMESET(key); break;
+    case ScreenType::MAIN:      interact_MAIN(key);     break;
+    case ScreenType::SETTINGS:  interact_SETTINGS(key); break;
+    case ScreenType::TIMESET:   interact_TIMESET(key);  break;
     default: break;
   }
 }
@@ -27,12 +27,25 @@ void interact_MAIN(Key key) {
     case Key::ENTER:
     {
       UC_CatIsFed();
+      updateScreen();
       break;
     }
     case Key::LEFT:
     {
       changeScreen(ScreenType::SETTINGS);
       ScreenAnimation.directionToRight = true;
+      break;
+    }
+    case Key::UP:
+    {
+      UC_SetLastNextFFState(false);
+      updateScreen();
+      break;
+    }
+    case Key::DOWN:
+    {
+      UC_SetLastNextFFState(true);
+      updateScreen();
       break;
     }
     default: break;
@@ -45,6 +58,7 @@ void interact_SETTINGS(Key key) {
     {
       Cursors.settings++;
       if (Cursors.settingsSaveState){
+        Cursors.settingsSaveState = false;
         Settings = SettingsCopy;
         UC_SetMealsForToday();
         UC_saveSettings();
@@ -110,6 +124,7 @@ void interact_TIMESET(Key key) {
     {
       Cursors.timeset++;
       if (Cursors.timesetSaveState){
+        Cursors.timesetSaveState = false;
         rtc.setTime(setTimeTemp);
         UC_SetMealsForToday();
         UC_SetNextMeal();
@@ -178,8 +193,7 @@ void UC_CatIsFed() {
   Timers.hungryCatAlarmChange = 0;
   Timers.hungryCatAlarmChange_FF_status = false;
 
-  Timers.lastNextMealChange = 0;
-  Timers.lastNextMealChange_FF_status = false;
+  UC_SetLastNextFFState(false);
 
   FedStatus.isFed = true;
   FedStatus.lastMeal = rtc.getTime();
@@ -263,6 +277,10 @@ void UC_finishAnimation() {
   updateScreen();
 }
 
+void UC_SetLastNextFFState(bool isNext){
+  Timers.lastNextMealChange = 0;
+  Timers.lastNextMealChange_FF_status = isNext;
+}
 
 void loadSettings() {
 

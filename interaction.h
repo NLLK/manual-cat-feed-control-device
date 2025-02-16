@@ -17,6 +17,7 @@ void UC_SetMealsToNextDay();
 void UC_SetMealsForToday();
 void UC_saveSettings();
 void UC_finishAnimation();
+void UC_SetLastNextFFState(bool isNext);
 
 void loadSettings();
 void screenAnimationHandle();
