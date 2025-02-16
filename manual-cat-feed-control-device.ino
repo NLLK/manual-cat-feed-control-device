@@ -8,6 +8,7 @@
 #include <GyverPower.h>
 
 #define LEDlcdPin 10
+#define RTC_POWER_PIN 12
 #define EXTERNAL_BUTTON_PIN 1
 void setup() {
 
@@ -15,6 +16,9 @@ void setup() {
 
   pinMode(LEDlcdPin, OUTPUT);
   digitalWrite(LEDlcdPin, LOW);
+
+  pinMode(RTC_POWER_PIN, OUTPUT);
+  digitalWrite(RTC_POWER_PIN, HIGH);
 
   Wire.begin();
   Serial.begin(9600);
@@ -138,12 +142,14 @@ void powerHandle() {
     lcd.display();
     digitalWrite(LEDlcdPin, backlightStatus ? HIGH : LOW);
     
-    if (!backlightStatus){
+    if (!backlightStatus){  
+      digitalWrite(RTC_POWER_PIN, LOW);
       lcd.noDisplay();
       power.hardwareDisable(PWR_ALL);
       power.setSleepMode(POWERDOWN_SLEEP);
       power.sleep(SLEEP_FOREVER);
       power.hardwareEnable(PWR_ALL);
+      digitalWrite(RTC_POWER_PIN, HIGH);
     }
   }
 }
