@@ -58,6 +58,8 @@ void loop() {
 
 void secondsInt(void) {
 
+  usbConnectionStatus = Serial;
+
   if (currentYearDay != rtc.yearDay()){
     currentYearDay = rtc.yearDay();
     UC_SetMealsForToday();
@@ -141,8 +143,6 @@ void powerHandle() {
       power.hardwareDisable(PWR_ALL);
       power.setSleepMode(POWERDOWN_SLEEP);
       power.sleep(SLEEP_FOREVER);
-      power.setSleepMode(IDLE_SLEEP);
-      power.sleep(SLEEP_16MS);
       power.hardwareEnable(PWR_ALL);
     }
   }

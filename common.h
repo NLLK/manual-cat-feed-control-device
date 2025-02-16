@@ -113,6 +113,7 @@ extern CursorsDef Cursors;
 extern bool backlightStatus;
 extern bool hungryCatAlarmStatus;
 extern bool keyHandleStatus;
+extern bool usbConnectionStatus;
 
 extern bool tenMsExpired;
 extern uint16_t currentYearDay;

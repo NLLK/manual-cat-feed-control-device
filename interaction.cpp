@@ -2,8 +2,10 @@
 
 void interact(Key key) {
 
-  Serial.print("Key pressed: ");
-  Serial.println((int)key);
+  if (usbConnectionStatus){
+    Serial.print("Key pressed: ");
+    Serial.println((int)key);
+  }
 
   Timers.backlightTurnOff = 0;
 
@@ -195,7 +197,9 @@ void UC_SetNextMeal() {
   Datime currentTime = rtc.getTime();
 
   for (int i = 0; i < 4; i++) {
-    Serial.println(periods[i]->toString() + " " + currentTime.toString());
+    if (usbConnectionStatus){
+      Serial.println(periods[i]->toString() + " " + currentTime.toString());
+    }
     if (*periods[i] > currentTime){
       // it was the last meal for today - prepare for the next day
       if (i == 3) {
@@ -215,7 +219,7 @@ void UC_SetMealsToNextDay() {
   for (int i = 0; i < 3; i++) {
     if (meals[i]->dayIndex() == rtc.getTime().dayIndex())
       meals[i]->addDays(1);
-      Serial.println("next "+meals[i]->toString());
+      if (usbConnectionStatus) Serial.println("next "+meals[i]->toString());
   }
 }
 
@@ -229,7 +233,7 @@ void UC_SetMealsForToday() {
     meals[i]->year = currentTime.year;
     meals[i]->month = currentTime.month;
     meals[i]->day = currentTime.day;
-    Serial.println("today "+meals[i]->toString());
+    if (usbConnectionStatus) Serial.println("today "+meals[i]->toString());
   }
 }
 
@@ -238,10 +242,14 @@ void UC_saveSettings() {
 
   for (int i = 0; i < 3; i++) {
     byte data[2] = { periods[i]->hour, periods[i]->minute };
-    Serial.println("Save settings to EEPROM: ");
-    Serial.print(data[0]);
-    Serial.print(" ");
-    Serial.println(data[1]);
+
+    if (usbConnectionStatus){
+
+      Serial.println("Save settings to EEPROM: ");
+      Serial.print(data[0]);
+      Serial.print(" ");
+      Serial.println(data[1]);
+    }
     EEPROM.put(0 + i * 2, data);
   }
 }

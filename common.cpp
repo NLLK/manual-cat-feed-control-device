@@ -25,6 +25,7 @@ CursorsDef Cursors;
 bool backlightStatus = true;
 bool hungryCatAlarmStatus = false;
 bool keyHandleStatus = false;
+bool usbConnectionStatus = false;
 
 bool tenMsExpired = false;
 uint16_t currentYearDay = 0;
