@@ -176,6 +176,9 @@ void UC_CatIsFed() {
   Timers.hungryCatAlarmChange = 0;
   Timers.hungryCatAlarmChange_FF_status = false;
 
+  Timers.lastNextMealChange = 0;
+  Timers.lastNextMealChange_FF_status = false;
+
   FedStatus.isFed = true;
   FedStatus.lastMeal = rtc.getTime();
   FedStatus.hoursHungry = 0;
