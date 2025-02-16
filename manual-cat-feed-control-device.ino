@@ -5,7 +5,7 @@
 #include "interaction.h"
 #include "common.h"
 
-#include <LowPower.h> //https://github.com/rocketscream/Low-Power
+#include <GyverPower.h>
 
 #define LEDlcdPin 10
 #define EXTERNAL_BUTTON_PIN 1
@@ -138,7 +138,12 @@ void powerHandle() {
     
     if (!backlightStatus){
       lcd.noDisplay();
-      LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF); 
+      power.hardwareDisable(PWR_ALL);
+      power.setSleepMode(POWERDOWN_SLEEP);
+      power.sleep(SLEEP_FOREVER);
+      power.setSleepMode(IDLE_SLEEP);
+      power.sleep(SLEEP_16MS);
+      power.hardwareEnable(PWR_ALL);
     }
   }
 }
