@@ -8,7 +8,7 @@
 const uint8_t lastNextMealChangeTimer_TO = 5;      //s
 const uint8_t backlightTurnOffTimer_TO = 15;      //s
 const uint16_t debouncingTimer_TO = 300;           //ms
-const uint16_t extButtonDebouncingTimer_TO = 300;  //ms
+const uint16_t extButtonDebouncingTimer_TO = 1000;  //ms
 const uint8_t hungryCatAlarm_TO = 2;               //s
 const uint16_t screenAnimationFrameDuration = 50;  //ms
 

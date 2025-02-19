@@ -40,6 +40,7 @@ void updateScreen_MAIN() {
   } else if (drewStars) {
     lcd.setCursor(x_offset + 12, 0);
     lcd.print("    ");
+    drewStars = false;
   }
 
   lcd.setCursor(x_offset + 0, 1);
@@ -53,13 +54,8 @@ void updateScreen_MAIN() {
     printHoursAndMinutes(FedStatus.lastMeal.hour, FedStatus.lastMeal.minute);
   }
 
-  if (FedStatus.isFed) {
-    lcd.setCursor(x_offset + 12, 1);
-    lcd.print(" FED");
-  } else {
-    lcd.setCursor(x_offset + 12, 1);
-    lcd.print("HNGR");
-  }
+  lcd.setCursor(x_offset + 12, 1);
+  lcd.print(FedStatus.isFed ? " FED" : "HNGR");
 }
 
 void updateScreen_SETTINGS() {

@@ -39,7 +39,7 @@ void setup() {
   loadSettings();
   digitalWrite(LEDlcdPin, HIGH);
 
-  attachInterrupt(digitalPinToInterrupt(EXTERNAL_BUTTON_PIN), handleExternalButtonInterrupt, FALLING);
+  attachInterrupt(digitalPinToInterrupt(EXTERNAL_BUTTON_PIN), handleExternalButtonInterrupt, RISING);
   pinMode(EXTERNAL_BUTTON_PIN, INPUT_PULLUP);
 
   while(!rtc.tick()){
@@ -72,8 +72,6 @@ void loop() {
 }
 
 void secondsInt(void) {
-  //usbConnectionStatus = Serial;
-
   if (!usbConnectionStatus && Serial.available() > 0){
     Serial.readString();
     usbConnectionStatus = true;
