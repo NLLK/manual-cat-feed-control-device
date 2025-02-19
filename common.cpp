@@ -22,9 +22,8 @@ ScreenAnimationDef ScreenAnimation;
 CursorsDef Cursors;
 
 
-bool backlightStatus = true;
-bool hungryCatAlarmStatus = false;
 bool keyHandleStatus = false;
+bool backlightStatus = true;
 bool usbConnectionStatus = false;
 
 bool tenMsExpired = false;

@@ -9,5 +9,6 @@ void updateScreen_SETTINGS();
 void updateScreen_TIMESET();
 void printHoursAndMinutes(int hours, int minutes);
 void changeScreen(ScreenType newScreen);
+void showRtcErrorMessage();
 
 #endif

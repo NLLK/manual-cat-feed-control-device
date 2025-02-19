@@ -204,6 +204,13 @@ void changeScreen(ScreenType newScreen) {
   updateScreen();
 }
 
+void showRtcErrorMessage(){
+  lcd.setCursor(0,0);
+  lcd.print("NO RTC DETECTED");
+  lcd.setCursor(0,1);
+  lcd.print("OR OTHER RTC ERR");
+}
+
 //
 // Utils
 //

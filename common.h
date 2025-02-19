@@ -3,6 +3,7 @@
 
 #include <LiquidCrystal.h>
 #include <GyverDS3231.h>
+#include <GyverPower.h>
 
 //
 // definitions
@@ -86,9 +87,6 @@ struct TimersDef {
   bool extDebouncingStatus;
 
   uint8_t backlightTurnOff;
-
-  uint8_t hungryCatAlarmChange;
-  uint8_t hungryCatAlarmChange_FF_status;
 };
 extern TimersDef Timers;
 
@@ -111,7 +109,6 @@ struct CursorsDef{
 extern CursorsDef Cursors;
 
 extern bool backlightStatus;
-extern bool hungryCatAlarmStatus;
 extern bool keyHandleStatus;
 extern bool usbConnectionStatus;
 

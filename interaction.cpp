@@ -32,6 +32,10 @@ void interact_MAIN(Key key) {
     }
     case Key::LEFT:
     {
+      break;
+    }
+    case Key::RIGHT:
+    {
       changeScreen(ScreenType::SETTINGS);
       ScreenAnimation.directionToRight = true;
       break;
@@ -66,7 +70,7 @@ void interact_SETTINGS(Key key) {
       }
       break;
     }
-    case Key::LEFT:
+    case Key::RIGHT:
     {
       changeScreen(ScreenType::TIMESET);
       ScreenAnimation.directionToRight = true;
@@ -131,7 +135,7 @@ void interact_TIMESET(Key key) {
       }
       break;
     }
-    case Key::LEFT:
+    case Key::RIGHT:
     {
       changeScreen(ScreenType::MAIN);
       ScreenAnimation.directionToRight = true;
@@ -188,11 +192,6 @@ void interact_TIMESET(Key key) {
 //
 
 void UC_CatIsFed() {
-
-  hungryCatAlarmStatus = false;
-  Timers.hungryCatAlarmChange = 0;
-  Timers.hungryCatAlarmChange_FF_status = false;
-
   UC_SetLastNextFFState(false);
 
   FedStatus.isFed = true;

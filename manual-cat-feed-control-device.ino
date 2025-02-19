@@ -5,8 +5,6 @@
 #include "interaction.h"
 #include "common.h"
 
-#include <GyverPower.h>
-
 #define LEDlcdPin 10
 #define RTC_POWER_PIN 12
 #define EXTERNAL_BUTTON_PIN 1
@@ -22,8 +20,16 @@ void setup() {
 
   Wire.begin();
   Serial.begin(9600);
+  Serial.setTimeout(10);
   lcd.begin(16, 2);
-  rtc.begin();
+
+  lcd.setCursor(0,0);
+  lcd.print("INIT");
+
+  bool status = rtc.begin() && rtc.isOK();
+  if (!status){
+    showRtcErrorMessage();
+  }
 
   if (!rtc.updateNow()){
     rtc.setBuildTime();
@@ -33,8 +39,16 @@ void setup() {
   loadSettings();
   digitalWrite(LEDlcdPin, HIGH);
 
-  attachInterrupt(digitalPinToInterrupt(EXTERNAL_BUTTON_PIN), handleExternalButtonInterrupt, RISING);
+  attachInterrupt(digitalPinToInterrupt(EXTERNAL_BUTTON_PIN), handleExternalButtonInterrupt, FALLING);
   pinMode(EXTERNAL_BUTTON_PIN, INPUT_PULLUP);
+
+  while(!rtc.tick()){
+    //wait for one seconds tick from rtc
+  }
+
+  usbConnectionStatus = true;
+  lcd.clear();
+  UC_CatIsFed();
 }
 
 
@@ -45,14 +59,11 @@ void setup() {
 
 void loop() {
   if (rtc.tick()) {
-    static bool inited = false;
-    if (!inited) {
-      inited = true;
-
-      UC_CatIsFed();
-    }
-
     secondsInt();
+  }
+
+  if (!rtc.isOK()){
+    showRtcErrorMessage();
   }
 
   screenAnimationHandle();
@@ -61,12 +72,11 @@ void loop() {
 }
 
 void secondsInt(void) {
+  //usbConnectionStatus = Serial;
 
-  usbConnectionStatus = Serial;
-
-  if (currentYearDay != rtc.yearDay()){
-    currentYearDay = rtc.yearDay();
-    UC_SetMealsForToday();
+  if (!usbConnectionStatus && Serial.available() > 0){
+    Serial.readString();
+    usbConnectionStatus = true;
   }
 
   if (backlightStatus) {
@@ -86,12 +96,17 @@ void secondsInt(void) {
     Timers.lastNextMealChange_FF_status = !Timers.lastNextMealChange_FF_status;
   }
 
-  if (hungryCatAlarmStatus) {
-    Timers.hungryCatAlarmChange++;
-    if (Timers.hungryCatAlarmChange >= hungryCatAlarm_TO) {
-      Timers.hungryCatAlarmChange = 0;
-      Timers.hungryCatAlarmChange_FF_status = !Timers.hungryCatAlarmChange_FF_status;
-    }
+  hungryAndTimeManagement();
+
+  if (!ScreenAnimation.status)
+    updateScreen();
+}
+
+void hungryAndTimeManagement(){
+
+  if (currentYearDay != rtc.yearDay()){
+    currentYearDay = rtc.yearDay();
+    UC_SetMealsForToday();
   }
 
   if (rtc.getTime() > FedStatus.nextMeal) {
@@ -100,18 +115,8 @@ void secondsInt(void) {
 
   if (!FedStatus.isFed) {
     int secondsHungry = rtc.getTime().daySeconds() - FedStatus.nextMeal.daySeconds();
-
-    if (secondsHungry > 0) {
-      FedStatus.hoursHungry = secondsHungry / 3600;
-
-      if (FedStatus.hoursHungry >= 3) {
-        hungryCatAlarmStatus = true;
-      }
-    }
+    FedStatus.hoursHungry = secondsHungry / 3600;
   }
-
-  if (!ScreenAnimation.status)
-    updateScreen();
 }
 
 //10 ms timer
@@ -149,7 +154,8 @@ void powerHandle() {
       power.setSleepMode(POWERDOWN_SLEEP);
       power.sleep(SLEEP_FOREVER);
       power.hardwareEnable(PWR_ALL);
-      digitalWrite(RTC_POWER_PIN, HIGH);
+      digitalWrite(RTC_POWER_PIN, HIGH);  
+      usbConnectionStatus = false;
     }
   }
 }
