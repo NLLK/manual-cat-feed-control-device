@@ -206,6 +206,8 @@ void UC_SetNextMeal() {
   Datime nextDay = Settings.firstMeal;
   nextDay.addDays(1);
 
+ UC_SetMealsForToday();
+
   Datime* periods[4] = { &Settings.firstMeal, &Settings.secondMeal, &Settings.thirdMeal, &nextDay }; 
   Datime currentTime = rtc.getTime();
 

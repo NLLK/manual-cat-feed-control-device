@@ -113,7 +113,6 @@ extern bool keyHandleStatus;
 extern bool usbConnectionStatus;
 
 extern bool tenMsExpired;
-extern uint16_t currentYearDay;
 extern bool externalButtonClicked;
 
 extern GyverDS3231 rtc;

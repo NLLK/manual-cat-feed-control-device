@@ -102,11 +102,6 @@ void secondsInt(void) {
 
 void hungryAndTimeManagement(){
 
-  if (currentYearDay != rtc.yearDay()){
-    currentYearDay = rtc.yearDay();
-    UC_SetMealsForToday();
-  }
-
   if (rtc.getTime() > FedStatus.nextMeal) {
     FedStatus.isFed = false;
   }

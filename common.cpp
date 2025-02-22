@@ -27,7 +27,6 @@ bool backlightStatus = true;
 bool usbConnectionStatus = false;
 
 bool tenMsExpired = false;
-uint16_t currentYearDay = 0;
 bool externalButtonClicked = false;
 
 GyverDS3231 rtc;
