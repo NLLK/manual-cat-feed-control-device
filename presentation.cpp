@@ -25,22 +25,36 @@ void updateScreen_MAIN() {
   lcd.print(" ");
   printHoursAndMinutes(time.hour, time.minute);
 
-  static bool drewStars = false;
-
-  if (!FedStatus.isFed && FedStatus.hoursHungry != 0) {
-    uint8_t limited = FedStatus.hoursHungry > 3 ? 4 : FedStatus.hoursHungry;
-    lcd.setCursor(x_offset + 16 - limited, 0);
-
-    String stars = "";
-    for (int i = 0; i < limited; i++) {
-      stars += '*';
-    }
-    lcd.print(stars);
-    drewStars = true;
-  } else if (drewStars) {
+  if (Timers.lastNextMealChange_FF_status) {
     lcd.setCursor(x_offset + 12, 0);
     lcd.print("    ");
-    drewStars = false;
+    if (!FedStatus.isFed && FedStatus.hoursHungry != 0) {
+      uint8_t limited = FedStatus.hoursHungry > 3 ? 4 : FedStatus.hoursHungry;
+      lcd.setCursor(x_offset + 16 - limited, 0);
+
+      String stars = "";
+      for (int i = 0; i < limited; i++) {
+        stars += '*';
+      }
+      lcd.print(stars);
+    }
+  }else{
+    lcd.setCursor(x_offset + 12, 0);
+    uint8_t prc = BatteryInfo.chargePercent / 10;
+
+    if (BatteryInfo.isCharging && !BatteryInfo.isDoneCharging)
+      lcd.print("~");
+    else if (!BatteryInfo.isCharging && BatteryInfo.isDoneCharging)
+      lcd.print("^");
+    else if (BatteryInfo.isCharging && BatteryInfo.isDoneCharging)
+      lcd.print("!");
+    else 
+      lcd.print(" ");
+
+    lcd.print(" ");
+
+    lcd.print(prc < 10 ? " " : "");
+    lcd.print(prc);
   }
 
   lcd.setCursor(x_offset + 0, 1);

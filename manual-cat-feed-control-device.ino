@@ -8,6 +8,10 @@
 #define LEDlcdPin 10
 #define RTC_POWER_PIN 12
 #define EXTERNAL_BUTTON_PIN 1
+#define KEYBOARD_ANALOG_PIN 0
+#define BATTERY_VOLTAGE_ADC_PIN 1
+#define BATTERY_CHARGING_PIN 11
+#define BATTERY_DONE_CHG_PIN 13
 void setup() {
 
   timer_init_ISR_100Hz(TIMER_DEFAULT);
@@ -41,6 +45,9 @@ void setup() {
 
   attachInterrupt(digitalPinToInterrupt(EXTERNAL_BUTTON_PIN), handleExternalButtonInterrupt, RISING);
   pinMode(EXTERNAL_BUTTON_PIN, INPUT_PULLUP);
+
+  pinMode(BATTERY_CHARGING_PIN, INPUT);
+  pinMode(BATTERY_DONE_CHG_PIN, INPUT);
 
   while(!rtc.tick()){
     //wait for one seconds tick from rtc
@@ -96,6 +103,8 @@ void secondsInt(void) {
 
   hungryAndTimeManagement();
 
+  batteryHandle();
+
   if (!ScreenAnimation.status)
     updateScreen();
 }
@@ -121,6 +130,13 @@ void timer_handle_interrupts(int timer) {
   if (counter == 5) {
     counter = 0;
     keyHandleStatus = true;
+
+    static uint8_t cnt2 = 0;
+    cnt2++;
+    if (cnt2 == 5){
+      cnt2 = 0;
+      batteryHandleStatus = true;
+    }
   }
 
   if (Timers.debouncingStatus) {
@@ -172,9 +188,7 @@ void keysHandle() {
   }
   
   if (!keyHandleStatus) return;
-
   keyHandleStatus = false;
-
 
   Key key = keys(analogRead(0));
 
@@ -204,4 +218,53 @@ Key keys(int xKeyVal) {
 
 void handleExternalButtonInterrupt(){
   externalButtonClicked = true;
+}
+
+void batteryHandle(){
+
+  if (!batteryHandleStatus) return;
+  batteryHandleStatus = false;
+
+  BatteryInfo.isCharging = digitalRead(BATTERY_CHARGING_PIN) == 1;
+  BatteryInfo.isDoneCharging = digitalRead(BATTERY_DONE_CHG_PIN) == 1; 
+
+  if (usbConnectionStatus){
+    Serial.print("BAT CHG: ");
+    Serial.println(digitalRead(BATTERY_CHARGING_PIN));
+    Serial.print("BAT RDY: ");
+    Serial.println(digitalRead(BATTERY_DONE_CHG_PIN));
+  }
+
+  setBatteryPercentage();
+}
+
+void setBatteryPercentage(){
+
+  uint16_t batteryAdcData = analogRead(BATTERY_VOLTAGE_ADC_PIN);
+  if (usbConnectionStatus){
+    Serial.print("BAT ADC: ");
+    Serial.println(batteryAdcData);
+  }
+
+  float batteryVoltage = 5.0f * (batteryAdcData/1024.0f);
+
+  if (usbConnectionStatus){
+    Serial.print("BAT VOLTAGE: ");
+    Serial.println(batteryVoltage);
+  }
+
+  float minBasedBatteryVoltage = batteryVoltage - chargeMinimumVoltage;
+
+  if (minBasedBatteryVoltage < 0){
+    BatteryInfo.chargePercent = 0;
+    return;
+  }
+
+  float minBasedMaxValue = chargeMaximumVoltage - chargeMinimumVoltage;
+
+  float percentageFloat = minBasedMaxValue / minBasedBatteryVoltage;
+  if (percentageFloat > 1)
+    BatteryInfo.chargePercent = 100;
+  else
+    BatteryInfo.chargePercent = percentageFloat * 100;
 }

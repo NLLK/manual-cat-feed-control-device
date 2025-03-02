@@ -12,6 +12,9 @@ const uint16_t extButtonDebouncingTimer_TO = 1000;  //ms
 const uint8_t hungryCatAlarm_TO = 2;               //s
 const uint16_t screenAnimationFrameDuration = 50;  //ms
 
+const float chargeMinimumVoltage = 2.7f;
+const float chargeMaximumVoltage = 4.2f;
+
 ScreenType currentScreen = ScreenType::MAIN;
 Datime setTimeTemp;
 
@@ -20,11 +23,12 @@ SettingsDef Settings, SettingsCopy;
 TimersDef Timers; 
 ScreenAnimationDef ScreenAnimation;
 CursorsDef Cursors;
-
+BatteryInfoDef BatteryInfo;
 
 bool keyHandleStatus = false;
 bool backlightStatus = true;
 bool usbConnectionStatus = false;
+bool batteryHandleStatus = false;
 
 bool tenMsExpired = false;
 bool externalButtonClicked = false;

@@ -58,6 +58,9 @@ extern const uint16_t extButtonDebouncingTimer_TO;    //ms
 extern const uint8_t hungryCatAlarm_TO;               //s
 extern const uint16_t screenAnimationFrameDuration;   //ms
 
+extern const float chargeMinimumVoltage;
+extern const float chargeMaximumVoltage;
+
 extern ScreenType currentScreen;
 extern Datime setTimeTemp;
 
@@ -108,9 +111,17 @@ struct CursorsDef{
 };
 extern CursorsDef Cursors;
 
+struct BatteryInfoDef{
+  bool isCharging = 0;
+  bool isDoneCharging = 0;
+  uint8_t chargePercent = 0;
+};
+extern BatteryInfoDef BatteryInfo;
+
 extern bool backlightStatus;
 extern bool keyHandleStatus;
 extern bool usbConnectionStatus;
+extern bool batteryHandleStatus;
 
 extern bool tenMsExpired;
 extern bool externalButtonClicked;
